@@ -5,8 +5,9 @@ VALUES(
     'Test Musteri Bir'
 );
 
-INSERT INTO loans(loan_number,customer_id,principal_amount,term_months)
+INSERT INTO loans(id,loan_number,customer_id,principal_amount,term_months)
 VALUES(
+    loans_seq.NEXTVAL,
     'TEST-L1001',
     (SELECT id FROM customers WHERE customer_number='TEST-C1001'),
     120000.00,

@@ -23,7 +23,7 @@ public class CustomerEntity {
     generator = "customers_seq_generator"
 )
 
-    @Column(name = "id")//javadaki is fieldını Oracle daki ID kolonuyla eşler.
+    @Column(name = "id")//javadaki "id" fieldını Oracle daki ID kolonuyla eşler.
     private Long id;
 
     @Column(

@@ -42,5 +42,4 @@ if (customerRepository.existsByCustomerNumber(request.getCustomerNumber())){
         private CustomerResponse toResponse(CustomerEntity customer){
             return new CustomerResponse(customer.getId(), customer.getCustomerNumber(), customer.getFullName());
         }
-
 }
