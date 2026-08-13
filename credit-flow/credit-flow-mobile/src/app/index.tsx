@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native'; //react native paketinden View , StyleSheet ve Text componentlerini ve yapılarını al.
 import { useEffect, useState } from 'react'; //bunu reactten alıyoruz
-
+//burası müsteriler ekranı.
 type Customer = {//typescriptte bir nesnenin veri tipini tanımlama.
   id: number;
   customerNumber: string;
