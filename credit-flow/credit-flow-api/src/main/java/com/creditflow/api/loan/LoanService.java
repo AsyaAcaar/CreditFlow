@@ -6,6 +6,13 @@ import java.util.Set;
 import com.creditflow.api.customer.CustomerEntity;
 import java.util.Optional;
 import java.util.List;
+import com.creditflow.api.installment.InstallmentRepository;
+import com.creditflow.api.installment.InstallmentEntity;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.ArrayList;
+
 
 @Service
 public class LoanService {
@@ -15,14 +22,44 @@ public class LoanService {
 
     private final LoanRepository loanRepository;
     private final CustomerRepository customerRepository;
+    private final InstallmentRepository installmentRepository;
+    private void createInstallments(LoanEntity loan){//burada vadeye bağlı olarak aylık kredi tutarını BigDecimal tipindeki değerde hesaplıyoruz.
+        BigDecimal regularAmount = loan.getPrincipalAmount()
+        .divide(
+            BigDecimal.valueOf(loan.getTermMonths()),
+            2,
+            RoundingMode.HALF_UP
+        );
+        List<InstallmentEntity> installments= new ArrayList<>();
+            for (int installmentNumber=1;installmentNumber<=loan.getTermMonths();installmentNumber++){ //ArrayList taksitleri bellekte toplar; for döngüsü 1’den vade ayına kadar her taksit için bir kez çalışır.
+//son taksitte kuruş farkını düzeltme mantığı.
+boolean isLastInstallment =( installmentNumber == loan.getTermMonths());
+    BigDecimal installmentAmount;
+    if (isLastInstallment){
+        //Normal taksitler yuvarlanmış tutarı alır; son taksit, önceki taksitlerden sonra kalan gerçek borcu alarak toplamı eşitler.
+        BigDecimal previousInstallmentsTotal =regularAmount.multiply(BigDecimal.valueOf(loan.getTermMonths()-1));
+        installmentAmount = loan.getPrincipalAmount().subtract(previousInstallmentsTotal);
+    }
+    else{
+        installmentAmount=regularAmount;
+    }
+ LocalDate dueDate= LocalDate.now().plusMonths(installmentNumber);
+ InstallmentEntity installment =new InstallmentEntity (loan.getId() , installmentNumber , installmentAmount , dueDate);
+ installments.add(installment);
+            }
+
+            installmentRepository.saveAll(installments);
+    }
 
     public LoanService(LoanRepository loanRepository ,
-        CustomerRepository customerRepository
+        CustomerRepository customerRepository,
+        InstallmentRepository installmentRepository
     ){
 
 
         this.loanRepository=loanRepository;
         this.customerRepository=customerRepository;
+        this.installmentRepository=installmentRepository;
 
     }//kredileri listeleme methodu başlıyor.
      @Transactional(readOnly=true)
@@ -45,6 +82,7 @@ public class LoanService {
             request.getTermMonths()
     );
             LoanEntity savedLoan =loanRepository.save(loan);//nesneyi Oracle a kaydediyoruz.
+            createInstallments(savedLoan);
             return toResponse(savedLoan);
 
 

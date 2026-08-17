@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.SequenceGenerator;
 
     @Entity
     @Table(name="installments")
@@ -19,9 +20,25 @@ import jakarta.persistence.EnumType;
 public class InstallmentEntity {
  protected InstallmentEntity(){
 
+
+    }
+    //kredi oluştururken bizim de yeni taksit nesneleri üretmemiz gerekiyor. Bu nedenle ayrıca public constructor yazacağız.
+
+    public InstallmentEntity(Long loanId,Integer installmentNumber,BigDecimal amount ,LocalDate dueDate ){
+        this.loanId=loanId;
+        this.installmentNumber=installmentNumber;
+        this.amount=amount;
+        this.dueDate=dueDate;
+        this.status=InstallmentStatus.PENDING;
+
+
     }
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator( name ="installments_seq_generator", //name Java tarafındaki bağlantı ismidir; sequenceName Oracle’daki gerçek sequence ismidir.
+        sequenceName = "installments_seq",
+        allocationSize = 1
+    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "installments_seq_generator")
    
     @Column(
         name ="id"
