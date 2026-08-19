@@ -91,5 +91,8 @@ public class LoanEntity {
         return createdAt;
     }
     //bunların hiçbiri dışarıdan ulaşılıp değiştirilmemeli.
+    public void close(){
+        this.status =LoanStatus.CLOSED;
+    }
 
 }

@@ -6,5 +6,8 @@ public interface InstallmentRepository
 
 extends JpaRepository<InstallmentEntity,Long>{
     List<InstallmentEntity> findByLoanIdOrderByInstallmentNumberAsc(Long loanId);
+    boolean existsByLoanIdAndInstallmentNumberLessThanAndStatusNot(Long loanId,Integer installmentNumber,InstallmentStatus status);
+    boolean existsByLoanIdAndStatusNot(Long loanId,InstallmentStatus status);
+    long countByLoanId(Long loanId);
 
 }
