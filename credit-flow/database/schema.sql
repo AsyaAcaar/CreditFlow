@@ -1,7 +1,21 @@
-CREATE SEQUENCE customers_seq
+CREATE SEQUENCE customers_seq --burada müsteriye uygun benzersiz bir id üretiyoruz.
 START WITH 1
 INCREMENT BY 1
 NOCYCLE;
+
+CREATE SEQUENCE customer_number_seq
+START WITH 100000
+INCREMENT BY 1
+MAXVALUE 999999
+NOCYCLE
+NOCACHE;
+
+CREATE SEQUENCE creditflow_identity_seq
+START WITH 1000000000
+INCREMENT BY 1
+MAXVALUE 9999999999
+NOCYCLE
+NOCACHE;
 
 CREATE SEQUENCE loans_seq
 START WITH 1
@@ -13,9 +27,13 @@ START WITH 1
 INCREMENT BY 1
 NOCYCLE;
 
+
 CREATE TABLE customers(
     id NUMBER PRIMARY KEY,
-    customer_number VARCHAR2(20) NOT NULL UNIQUE,
+    customer_number VARCHAR2(6) NOT NULL UNIQUE,
+    creditflow_id NUMBER(10) NOT NULL UNIQUE,
+    CONSTRAINT ck_customers_customer_number CHECK (REGEXP_LIKE(customer_number, '^[0-9]{6}$')),
+    CONSTRAINT ck_customers_creditflow_id CHECK (creditflow_id BETWEEN 1000000000 AND 9999999999),
     full_name VARCHAR2(100) NOT NULL,
     created_at TIMESTAMP  DEFAULT CURRENT_TIMESTAMP NOT NULL
 

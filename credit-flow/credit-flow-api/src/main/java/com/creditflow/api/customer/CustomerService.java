@@ -22,24 +22,20 @@ public class CustomerService {
         
     
     public CustomerResponse create(CreateCustomerRequest request) {
+        String customerNumber = customerRepository.getNextCustomerNumber();
+        Long creditFlowId = customerRepository.getNextCreditFlowId();
 
+        CustomerEntity customer = new CustomerEntity(customerNumber, creditFlowId, request.getFullName());
+        CustomerEntity savedCustomer = customerRepository.save(customer);
+        return toResponse(savedCustomer);
+    }
 
-if (customerRepository.existsByCustomerNumber(request.getCustomerNumber())){
-        throw new CustomerAlreadyExistsException(request.getCustomerNumber());
-    }// request.getCustomerNumber(): Frontend’den gelen müşteri numarasını okur.
-        // existsByCustomerNumber(...): Bu numara Oracle’da var mı diye Repository üzerinden sorgular.
-        // Sonuç true ise if bloğuna girilir.
- // new: Yeni bir exception nesnesi oluşturur.
-        // Exception’a hangi müşteri numarasının tekrarlandığını gönderir.
-        // throw: Metodu burada durdurur; aşağıdaki save işlemi çalışmaz.
-    
-
-
-        CustomerEntity customer=new CustomerEntity(request.getCustomerNumber(),request.getFullName());//requestten gelen iki değerle bellekte Entity oluşturulur.
-            CustomerEntity savedCustomer=customerRepository.save(customer); //save(customer) Entity’yi Oracle’a kaydeder.
-            return toResponse(savedCustomer); //Oracle’ın ürettiği ID’yi taşıyan savedCustomer, API Response’una çevrilir.
-        }
-        private CustomerResponse toResponse(CustomerEntity customer){
-            return new CustomerResponse(customer.getId(), customer.getCustomerNumber(), customer.getFullName());
-        }
+    private CustomerResponse toResponse(CustomerEntity customer){
+        return new CustomerResponse(
+            customer.getId(),
+            customer.getCustomerNumber(),
+            customer.getCreditFlowId(),
+            customer.getFullName()
+        );
+    }
 }

@@ -15,6 +15,7 @@ type Loan = {
 type Customer = {
   id: number;
   customerNumber: string;
+  creditFlowId: number;
   fullName: string;
 };
 type Installment = {

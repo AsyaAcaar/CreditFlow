@@ -13,7 +13,7 @@ import jakarta.persistence.SequenceGenerator;
 
 public class CustomerEntity {
     @Id //JPA ya bu field ın primary key olduğunu söyler.
-    @SequenceGenerator(
+    @SequenceGenerator( //customers_seq, teknik primary key olan id değerini üretir.
     name = "customers_seq_generator",
     sequenceName = "customers_seq",
     allocationSize = 1
@@ -27,11 +27,21 @@ public class CustomerEntity {
     private Long id;
 
     @Column(
-    name = "customer_number",
-    nullable = false,
-    unique = true,
-    length = 20)
+        name = "customer_number",
+        nullable = false,
+        unique = true,
+        updatable = false,
+        length = 6
+    )
     private String customerNumber;
+
+    @Column(
+        name = "creditflow_id",
+        nullable = false,
+        unique = true,
+        updatable = false
+    )
+    private Long creditFlowId;
 
     @Column(
     name = "full_name",
@@ -50,9 +60,10 @@ public class CustomerEntity {
     protected CustomerEntity(){
 
     }
-    public CustomerEntity(String customerNumber,String fullName){
+    public CustomerEntity(String customerNumber, Long creditFlowId, String fullName){
         this.customerNumber=customerNumber;
         this.fullName=fullName;
+        this.creditFlowId=creditFlowId;
     }
     public Long getId(){
         return id;
@@ -60,14 +71,13 @@ public class CustomerEntity {
     public String getCustomerNumber(){
         return customerNumber;
     }
+    public Long getCreditFlowId(){
+        return creditFlowId;
+    }
     public String getFullName(){
         return fullName;
     }
     public LocalDateTime getCreatedAt(){
         return createdAt;
     }
-
-
-
-
 }

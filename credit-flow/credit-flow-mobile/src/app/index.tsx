@@ -5,17 +5,18 @@ import { PopPressable } from '@/components/pop-pressable';
 type Customer = {//typescriptte bir nesnenin veri tipini tanımlama.
   id: number;
   customerNumber: string;
+  creditFlowId: number;
   fullName: string;
 };
 
 export default function CustomerScreen() {//style yok; nesnenin alanı doğrudan süslü parantez içinde gösteriliyor.
+
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isCustomerFormVisible, setIsCustomerFormVisible] = useState<boolean>(false);
-  const [customerNumber, setCustomerNumber] = useState<string>('');
   const [fullName, setFullName] = useState<string>('');
-
+  const isCustomerFormValid = fullName.trim().length > 0;
   useEffect(() => {
     fetch('http://localhost:8080/api/customers')
       .then((response) => response.json())
@@ -37,7 +38,6 @@ export default function CustomerScreen() {//style yok; nesnenin alanı doğrudan
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        customerNumber,
         fullName,
       }),
     })
@@ -52,7 +52,6 @@ export default function CustomerScreen() {//style yok; nesnenin alanı doğrudan
           newCustomer,
           ...currentCustomers,
         ]);
-        setCustomerNumber('');
         setFullName('');
         setIsCustomerFormVisible(false);
         setErrorMessage(null);
@@ -62,8 +61,6 @@ export default function CustomerScreen() {//style yok; nesnenin alanı doğrudan
         setErrorMessage('Müşteri oluşturulamadı');
       })
   };
-  const isCustomerFormValid =
-    customerNumber.trim().length > 0 && fullName.trim().length > 0;
 
   return (
     <ScrollView
@@ -91,14 +88,9 @@ export default function CustomerScreen() {//style yok; nesnenin alanı doğrudan
       {isCustomerFormVisible
         && <View style={styles.formCard}>
           <Text style={styles.formTitle}>Yeni müşteri kaydı</Text>
-          <Text style={styles.formDescription}>Zorunlu alanları eksiksiz doldurun.</Text>
-          <Text style={styles.inputLabel}>Müşteri numarası</Text>
-          <TextInput
-            placeholder='Müşteri Numarası'
-            placeholderTextColor="#94a3b8"
-            style={styles.input}
-            value={customerNumber}
-            onChangeText={setCustomerNumber}></TextInput>
+          <Text style={styles.formDescription}>
+            Ad soyadı girin. Müşteri numarası ve CreditFlow ID sistem tarafından otomatik üretilir.
+          </Text>
 
           <Text style={styles.inputLabel}>Ad soyad</Text>
           <TextInput
@@ -106,7 +98,8 @@ export default function CustomerScreen() {//style yok; nesnenin alanı doğrudan
             placeholderTextColor="#94a3b8"
             style={styles.input}
             value={fullName}
-            onChangeText={setFullName}></TextInput>
+            onChangeText={setFullName}
+          />
           <View style={styles.formActions}>
             <PopPressable
               style={[
@@ -123,7 +116,6 @@ export default function CustomerScreen() {//style yok; nesnenin alanı doğrudan
               style={[styles.secondaryButton, styles.formButton]}
               onPress={() => {
                 setIsCustomerFormVisible(false);
-                setCustomerNumber('');
                 setFullName('');
                 setErrorMessage(null);
               }}
@@ -149,10 +141,12 @@ export default function CustomerScreen() {//style yok; nesnenin alanı doğrudan
               </View>
               <View style={styles.customerInfo}>
                 <Text style={styles.customerName}>{customer.fullName}</Text>
-                <Text style={styles.customerNumber}>{customer.customerNumber}</Text>
-              </View>
-              <View style={styles.idBadge}>
-                <Text style={styles.idBadgeText}>ID {customer.id}</Text>
+                <Text style={styles.customerNumber}>
+                  Müşteri No: {customer.customerNumber}
+                </Text>
+                <Text style={styles.customerNumber}>
+                  CreditFlow ID: {customer.creditFlowId}
+                </Text>
               </View>
             </View>
           ))}

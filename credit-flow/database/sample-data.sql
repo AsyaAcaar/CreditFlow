@@ -1,26 +1,28 @@
-INSERT INTO customers (id,customer_number,full_name)
+-- Yalnizca yerel gelistirme icin kullanilan tamamen kurgusal ornek veriler.
+INSERT INTO customers (id, customer_number, creditflow_id, full_name)
 VALUES(
     customers_seq.NEXTVAL,
-    'TEST-C1001',
+    TO_CHAR(customer_number_seq.NEXTVAL, 'FM000000'),
+    creditflow_identity_seq.NEXTVAL,
     'Test Musteri Bir'
 );
 
-INSERT INTO loans(id,loan_number,customer_id,principal_amount,term_months)
+INSERT INTO loans(id, loan_number, customer_id, principal_amount, term_months)
 VALUES(
     loans_seq.NEXTVAL,
     'TEST-L1001',
-    (SELECT id FROM customers WHERE customer_number='TEST-C1001'),
+    (SELECT id FROM customers WHERE full_name = 'Test Musteri Bir'),
     120000.00,
     12
 );
 
-INSERT INTO installments(loan_id,installment_number,amount,due_date)
+INSERT INTO installments(id, loan_id, installment_number, amount, due_date)
 VALUES(
+    installments_seq.NEXTVAL,
     (SELECT id FROM loans WHERE loan_number='TEST-L1001'),
     1,
     10000.00,
     DATE '2026-09-01'
-
 );
---şimdi kişiye bağlı olarak krediyi bağlıyoruz.yine parantez içinde detaylar belirtilmeli.
---burada parantez içinde sırasıyla vereceğimiz kelimeleri belirtme sebebimiz alnızca iki değer verdiğin için “not enough values” hatası oluşur.çünkü normalade 4 adet parametre bulunuyor.
+
+COMMIT;
